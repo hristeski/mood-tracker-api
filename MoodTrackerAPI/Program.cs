@@ -35,7 +35,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
             "http://localhost:5173",
             "http://localhost:5174",
-            "https://mood-tracker-dun-one.vercel.app"
+            "https://mood-tracker-dun-one.vercel.app",
+            "https://mood-tracker-1la309y8h-hristijans-projects-1a765715.vercel.app"
         )
         .AllowAnyHeader()
         .AllowAnyMethod());
