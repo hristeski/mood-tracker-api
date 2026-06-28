@@ -1,0 +1,18 @@
+# Node
+node_modules/
+dist/
+.env
+
+# .NET
+MoodTrackerAPI/bin/
+MoodTrackerAPI/obj/
+MoodTrackerAPI/*.db
+MoodTrackerAPI/MoodTrackerAPI/bin/
+MoodTrackerAPI/MoodTrackerAPI/obj/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
