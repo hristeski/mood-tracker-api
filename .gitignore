@@ -1,1 +1,16 @@
-node_modules
+# .NET
+MoodTrackerAPI/bin/
+MoodTrackerAPI/obj/
+MoodTrackerAPI/*.db
+MoodTrackerAPI/*.db-shm
+MoodTrackerAPI/*.db-wal
+
+# Node
+mood-tracker-ui/node_modules/
+mood-tracker-ui/dist/
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+.vs/

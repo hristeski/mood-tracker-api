@@ -8,7 +8,7 @@ using MoodTrackerAPI.Models;
 namespace MoodTrackerAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[Controller]")]
     [Authorize]
     public class RecordsController : ControllerBase
     {
@@ -29,6 +29,7 @@ namespace MoodTrackerAPI.Controllers
                 UserId = userId,
                 MoodScore = dto.MoodScore,
                 SleepHours = dto.SleepHours,
+                Notes = dto.Notes,
                 RecordDate = DateTime.UtcNow
             };
 
@@ -38,26 +39,38 @@ namespace MoodTrackerAPI.Controllers
             return Ok(new { message = "Записот е зачуван!" });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var records = await _db.DailyRecords
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.RecordDate)
+                .ToListAsync();
+
+            return Ok(records);
+        }
+
         [HttpGet("heatmap")]
-public async Task<IActionResult> GetHeatmapData()
-{
-    var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        public async Task<IActionResult> GetHeatmapData()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-    // Враќаме објект: Дата и број на записи за таа дата
-    var data = await _db.DailyRecords
-        .Where(r => r.UserId == userId)
-        .GroupBy(r => r.RecordDate.Date)
-        .Select(g => new {
-            Date = g.Key,
-            Count = g.Count()
-        })
-        .OrderBy(x => x.Date)
-        .ToListAsync();
+            var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
 
-    return Ok(data);
-}
+            var data = await _db.DailyRecords
+                .Where(r => r.UserId == userId && r.RecordDate >= thirtyDaysAgo)
+                .GroupBy(r => r.RecordDate.Date)
+                .Select(g => new {
+                    Date = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            return Ok(data);
+        }
     }
 
-    public record CreateRecordDto(int MoodScore, double SleepHours);
+    public record CreateRecordDto(int MoodScore, double SleepHours, string? Notes);
 }
-
