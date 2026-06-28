@@ -162,3 +162,4 @@ C:\MoodTrackerProject\MoodTrackerAPI\obj\Debug\net9.0\MoodTrackerAPI.genruntimec
 C:\MoodTrackerProject\MoodTrackerAPI\obj\Debug\net9.0\ref\MoodTrackerAPI.dll
 C:\MoodTrackerProject\MoodTrackerAPI\bin\Debug\net9.0\Npgsql.dll
 C:\MoodTrackerProject\MoodTrackerAPI\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+C:\MoodTrackerProject\MoodTrackerAPI\obj\Debug\net9.0\MoodTrackerAPI.sourcelink.json
