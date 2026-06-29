@@ -14,14 +14,19 @@ namespace MoodTrackerAPI.Services
             _appPassword = config["Gmail:AppPassword"]!;
         }
 
-        public async Task SendWelcomeEmailAsync(string toEmail, string username)
+        public async Task SendVerificationEmailAsync(string toEmail, string username, string verificationToken)
         {
-            var subject = "Успешна регистрација";
+            var verifyLink = $"https://mood-tracker-dun-one.vercel.app/verify-email?token={verificationToken}";
+
+            var subject = "Потврдете го вашиот емаил";
             var body = $@"
                 <div style='font-family: Arial, sans-serif; color: #333;'>
-                    <h2>Добредојде, {username}!</h2>
-                    <p>Вашата сметка е успешно креирана.</p>
-                    <p>Сега можете да се најавите и да ги следите вашите расположенија.</p>
+                    <h2>Здраво, {username}!</h2>
+                    <p>Кликнете на копчето подолу за да ја потврдите вашата емаил адреса.</p>
+                    <a href='{verifyLink}' style='background:#4F46E5;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;display:inline-block;margin-top:10px;'>
+                        Потврди Емаил
+                    </a>
+                    <p style='margin-top:20px;color:#999;font-size:12px;'>Ако не сте се регистрирале, игнорирајте ја пораката.</p>
                 </div>";
 
             await SendEmailAsync(toEmail, subject, body);
