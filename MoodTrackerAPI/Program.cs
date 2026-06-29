@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MoodTrackerAPI.Data;
+using MoodTrackerAPI.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +43,7 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
-
+builder.Services.AddScoped<GmailEmailService>();
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");

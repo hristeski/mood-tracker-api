@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using MoodTrackerAPI.Data;
 using MoodTrackerAPI.Models;
+using MoodTrackerAPI.Services;
 
 namespace MoodTrackerAPI.Controllers
 {
@@ -15,11 +16,13 @@ namespace MoodTrackerAPI.Controllers
     {
         private readonly AppDbContext _db;
         private readonly IConfiguration _config;
+        private readonly GmailEmailService _emailService;
 
-        public AuthController(AppDbContext db, IConfiguration config)
+        public AuthController(AppDbContext db, IConfiguration config, GmailEmailService emailService)
         {
             _db = db;
             _config = config;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -38,6 +41,9 @@ namespace MoodTrackerAPI.Controllers
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
 
+            // Прати welcome мејл
+            await _emailService.SendWelcomeEmailAsync(dto.Email, dto.Username);
+
             return Ok(new { message = "Регистрацијата е успешна!" });
         }
 
@@ -51,6 +57,44 @@ namespace MoodTrackerAPI.Controllers
 
             var token = GenerateToken(user);
             return Ok(new { token, username = user.Username });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            // Секогаш враќај OK (за безбедност — да не се знае дали мејлот постои)
+            if (user == null)
+                return Ok(new { message = "Ако мејлот постои, ќе добиете линк." });
+
+            // Генерирај токен
+            var token = Guid.NewGuid().ToString("N");
+            user.ResetToken = token;
+            user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(15);
+            await _db.SaveChangesAsync();
+
+            await _emailService.SendPasswordResetEmailAsync(dto.Email, token);
+
+            return Ok(new { message = "Ако мејлот постои, ќе добиете линк." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u =>
+                u.ResetToken == dto.Token &&
+                u.ResetTokenExpiry > DateTime.UtcNow);
+
+            if (user == null)
+                return BadRequest("Токенот е невалиден или истечен.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            user.ResetToken = null;
+            user.ResetTokenExpiry = null;
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Лозинката е успешно променета!" });
         }
 
         private string GenerateToken(User user)
@@ -79,4 +123,6 @@ namespace MoodTrackerAPI.Controllers
 
     public record RegisterDto(string Username, string Email, string Password);
     public record LoginDto(string Email, string Password);
+    public record ForgotPasswordDto(string Email);
+    public record ResetPasswordDto(string Token, string NewPassword);
 }
