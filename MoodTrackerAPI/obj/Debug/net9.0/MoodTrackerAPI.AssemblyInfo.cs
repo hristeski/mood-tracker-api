@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MoodTrackerAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ce6f32eac49cadd29f40ed27ffc435f386db3dc6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da0409ace1adfa40c487a432ab382ce97da3e643")]
 [assembly: System.Reflection.AssemblyProductAttribute("MoodTrackerAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MoodTrackerAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

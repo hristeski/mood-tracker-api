@@ -31,23 +31,20 @@ public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     if (await _db.Users.AnyAsync(u => u.Email == dto.Email))
         return BadRequest("Корисник со овој емаил веќе постои.");
 
-    var verificationToken = Guid.NewGuid().ToString("N");
-
     var user = new User
     {
         Username = dto.Username,
         Email = dto.Email,
         PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-        IsEmailVerified = false,
-        EmailVerificationToken = verificationToken
+        IsEmailVerified = true, // Директно активирај
+        EmailVerificationToken = null
     };
 
     _db.Users.Add(user);
     await _db.SaveChangesAsync();
 
-    await _emailService.SendVerificationEmailAsync(dto.Email, dto.Username, verificationToken);
-
-    return Ok(new { message = "Регистрацијата е успешна! Проверете го вашиот емаил за потврда." });
+    var token = GenerateToken(user);
+    return Ok(new { token, username = user.Username, message = "Регистрацијата е успешна!" });
 }
 
 [HttpPost("login")]
